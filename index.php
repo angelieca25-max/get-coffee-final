@@ -1,6 +1,12 @@
+<?php 
+session_start();
+if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
+    header("location:login.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
-<html lang="id">
-<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Get Coffee – Kopi Berkualitas, Momen Bermakna</title>
