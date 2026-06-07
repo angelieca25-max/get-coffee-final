@@ -181,3 +181,5 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
     <script src="js/main.js"></script>
 </body>
 </html>
+
+// refresh stats github
