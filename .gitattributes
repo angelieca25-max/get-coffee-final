@@ -1,0 +1,3 @@
+*.php linguist-language=PHP
+.gitignore linguist-vendored
+.gitattributes linguist-vendored
