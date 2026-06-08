@@ -3,9 +3,20 @@ session_start();
 
 $conn = mysqli_connect("localhost", "root", "", "db_getcoffee");
 
-$sql_menu = "SELECT * FROM menu";
-$query_menu = mysqli_query($conn, $sql_menu);
-$total_menu = mysqli_num_rows($query_menu);
+// 1. Query menghitung Total Semua Menu
+$sql_all = "SELECT * FROM menu";
+$query_all = mysqli_query($conn, $sql_all);
+$total_all = mysqli_num_rows($query_all);
+
+// 2. Query menghitung Khusus Kopi / Minuman
+$sql_kopi = "SELECT * FROM menu WHERE id_kategori = '1'"; 
+$query_kopi = mysqli_query($conn, $sql_kopi);
+$total_kopi = mysqli_num_rows($query_kopi);
+
+// 3. Query menghitung Khusus Makanan
+$sql_makanan = "SELECT * FROM menu WHERE id_kategori = '2'"; 
+$query_makanan = mysqli_query($conn, $sql_makanan);
+$total_makanan = mysqli_num_rows($query_makanan);
 ?>
 
 <!DOCTYPE html>
@@ -22,16 +33,25 @@ $total_menu = mysqli_num_rows($query_menu);
     <hr>
 
     <div style="display: flex; gap: 20px; margin-top: 20px; margin-bottom: 25px;">
-        <div style="border: 2px solid #333; padding: 15px 30px; border-radius: 8px; background-color: #f9f9f9; text-align: center;">
-            <h3 style="margin: 0; color: #555;">TOTAL MENU KOPI</h3>
-            
-            <p style="font-size: 36px; font-weight: bold; margin: 10px 0 0 0; color: #7f5539;"><?php echo $total_menu; ?></p>
+        
+        <!-- Kotak 1: Total Kopi -->
+        <div style="border: 2px solid #333; padding: 15px 30px; border-radius: 8px; background-color: #f9f9f9; text-align: center; min-width: 150px;">
+            <h3 style="margin: 0; color: #555;">TOTAL MINUMAN</h3>
+            <p style="font-size: 36px; font-weight: bold; margin: 10px 0 0 0; color: #7f5539;"><?php echo $total_kopi; ?></p>
         </div>
+
+        <!-- Kotak 2: Total Makanan -->
+        <div style="border: 2px solid #333; padding: 15px 30px; border-radius: 8px; background-color: #f9f9f9; text-align: center; min-width: 150px;">
+            <h3 style="margin: 0; color: #555;">TOTAL MAKANAN</h3>
+            <p style="font-size: 36px; font-weight: bold; margin: 10px 0 0 0; color: #b7b7a4;"><?php echo $total_makanan; ?></p>
+        </div>
+
     </div>
 
     <hr>
     <h3>Menu Navigasi:</h3>
     <ul>
+        <li><a href="dashboard.php">Dashboard</a></li>
         <li><a href="menu.php">Kelola Menu</a></li>
         <li><a href="../logout.php">Logout</a></li>
     </ul>
