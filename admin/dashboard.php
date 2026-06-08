@@ -21,7 +21,6 @@ $total_menu = mysqli_num_rows($query_menu);
     <p>Selamat Datang di Halaman Kendali Admin!</p>
     <hr>
 
-   
     <div style="display: flex; gap: 20px; margin-top: 20px; margin-bottom: 25px;">
         <div style="border: 2px solid #333; padding: 15px 30px; border-radius: 8px; background-color: #f9f9f9; text-align: center;">
             <h3 style="margin: 0; color: #555;">TOTAL MENU KOPI</h3>
