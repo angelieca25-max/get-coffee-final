@@ -32,7 +32,6 @@ $total_menu = mysqli_num_rows($query_menu);
     <hr>
     <h3>Menu Navigasi:</h3>
     <ul>
-        <li><a href="dashboard.php">Dashboard</a></li>
         <li><a href="menu.php">Kelola Menu</a></li>
         <li><a href="../logout.php">Logout</a></li>
     </ul>
