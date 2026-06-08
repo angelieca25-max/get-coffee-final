@@ -3,7 +3,7 @@ session_start();
 
 // include "../koneksi.php";
 
-$conn = mysqli_connect("localhost", "root", "", "get-coffee"); 
+$conn = mysqli_connect("localhost", "root", "", "db_getcoffee"); 
 
 $sql = "SELECT * FROM menu";
 $query = mysqli_query($conn, $sql);
