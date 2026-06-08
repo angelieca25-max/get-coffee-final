@@ -3,16 +3,15 @@ session_start();
 
 $conn = mysqli_connect("localhost", "root", "", "db_getcoffee");
 
-// 1. Query menghitung Total Khusus Minuman (Kategori ID 1)
-$sql_kopi = "SELECT * FROM menu WHERE id_kategori = '1'"; 
-$query_kopi = mysqli_query($conn, $sql_kopi);
-$total_kopi = $query_kopi ? mysqli_num_rows($query_kopi) : 0;
+$sql_all = "SELECT * FROM menu";
+$query_all = mysqli_query($conn, $sql_all);
+$total_all = $query_all ? mysqli_num_rows($query_all) : 0;
 
-// 2. Query menghitung Total Khusus Makanan (Kategori ID 2)
-$sql_makanan = "SELECT * FROM menu WHERE id_kategori = '2'"; 
-$query_makanan = mysqli_query($conn, $sql_makanan);
-$total_makanan = $query_makanan ? mysqli_num_rows($query_makanan) : 0;
+
+$total_kopi = $total_all; 
+$total_makanan = $total_all; 
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
