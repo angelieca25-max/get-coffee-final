@@ -1,7 +1,9 @@
 <?php
 session_start();
 
-include "../koneksi.php";
+// include "../koneksi.php";
+
+$conn = mysqli_connect("localhost", "root", "", "get-coffee"); 
 
 $sql = "SELECT * FROM menu";
 $query = mysqli_query($conn, $sql);
