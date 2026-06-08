@@ -14,7 +14,7 @@ if(!isset($_SESSION['username'])) { header("Location: ../login.php"); exit; }
 </head>
 <body>
 
-    <h1>ADMIN PANEL</h1>
+    <h1>GET COFFEE - ADMIN HUB</h1>
 
     <ul>
         <li><a href="dashboard.php">Dashboard</a></li>
