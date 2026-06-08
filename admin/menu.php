@@ -17,7 +17,7 @@ $query = mysqli_query($conn, $sql);
 </head>
 <body>
 
-    <h1>KELOLA MENU COFFEE SHOP</h1>
+    <h1>KELOLA MENU GET COFFEE</h1>
 
     <a href="dashboard.php">Kembali ke Dashboard</a> | 
     <a href="tambah-menu.php">Tambah Menu Baru</a>
