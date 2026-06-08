@@ -39,7 +39,7 @@ $query = mysqli_query($conn, $sql);
             
             while($result = mysqli_fetch_array($query)){
                 
-                $id = $result['id']; 
+                $id = $result['id_menu'];
                 $nama_menu = $result['nama_menu']; 
                 $deskripsi = $result['deskripsi']; 
                 $harga = $result['harga']; 
