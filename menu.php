@@ -1,3 +1,83 @@
+<?php
+session_start();
+
+$conn = mysqli_connect("localhost", "root", "", "db_getcoffee"); 
+
+if (!$conn) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
+
+
+$sql = "SELECT * FROM menu";
+$query = mysqli_query($conn, $sql);
+
+
+$kategori_menu = [
+    'Signature Coffee'     => [],
+    'Espresso Based'       => [],
+    'Refreshment Mocktails'=> [],
+    'Non Coffee Ritual'    => [],
+    'Main Course'          => [],
+    'Rice Bowls'           => [],
+    'Breakfast'            => [],
+    'Snacks & Bites'       => []
+];
+
+
+if (mysqli_num_rows($query) > 0) {
+    while ($row = mysqli_fetch_array($query)) {
+        $nama = $row['nama_menu'];
+        $harga = $row['harga'];
+        
+        
+        $kolom_keys = array_keys($row);
+        $desc = isset($kolom_keys[5]) ? $row[$kolom_keys[5]] : ''; 
+        
+        
+        $harga_k = number_format(($harga / 1000), 0) . 'k';
+
+        
+        $nama_lc = strtolower($nama);
+        if (in_array($nama_lc, ['first strike', 'melonaire', 'scoth latte', 'get aren', 'dubai latte'])) {
+            $kategori_menu['Signature Coffee'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } elseif (in_array($nama_lc, ['espresso', 'americano', 'latte', 'cappuccino', 'mocha latte', 'con hielo', 'caramelt', 'vanilla latte', 'hazelnut latte', 'americano (orange/lemon)', 'caramble'])) {
+            $kategori_menu['Espresso Based'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } elseif (in_array($nama_lc, ['sunset lychee', 'crystall bloom', 'passion paradise', 'sunkissed'])) {
+            $kategori_menu['Refreshment Mocktails'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } elseif (in_array($nama_lc, ['strawberry cloud', 'matcha', 'chocolate', 'chocomint', 'biscoff latte', 'cookies cloud', 'lemon tea', 'peach tea', 'lychee tea'])) {
+            $kategori_menu['Non Coffee Ritual'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } elseif (in_array($nama_lc, ['mie katsu', 'nasi goreng get', 'nasi goreng hongkong', 'american chicken chop', 'ayam goreng kremes', 'sop iga', 'iga bakar', 'nasi ayam'])) {
+            $kategori_menu['Main Course'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } elseif (in_array($nama_lc, ['buttermilk chicken', 'ayam sambal matah', 'beef teriyaki', 'beef blackpepper'])) {
+            $kategori_menu['Rice Bowls'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } elseif (in_array($nama_lc, ['bubur ayam', 'soto ayam', 'get lucky noodle'])) {
+            $kategori_menu['Breakfast'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        } else {
+           
+            $kategori_menu['Snacks & Bites'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        }
+    }
+}
+
+
+function tampilkan_seksi_menu($items) {
+    if (empty($items)) {
+        echo "<p style='color: #999; font-style: italic; margin-bottom: 20px;'>Menu belum tersedia.</p>";
+        return;
+    }
+    foreach ($items as $item) {
+        echo '<div class="menu-item-row" data-reveal>';
+        echo '  <div class="menu-item-row__header">';
+        echo '    <h3 class="menu-item-row__name">' . htmlspecialchars($item['name']) . '</h3>';
+        echo '    <span class="menu-item-row__price">Rp ' . htmlspecialchars($item['price']) . '</span>';
+        echo '  </div>';
+        if (!empty($item['desc'])) {
+            echo '  <p class="menu-item-row__desc">' . htmlspecialchars($item['desc']) . '</p>';
+        }
+        echo '</div>';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -60,26 +140,12 @@
         <div class="menu-list-items">
           <div style="margin-bottom: 60px;">
             <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Signature Coffee</h3>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">First Strike</h3><span class="menu-item-row__price">Rp 20k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Melonaire</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Scoth Latte</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Get Aren</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Dubai Latte</h3><span class="menu-item-row__price">Rp 28k</span></div></div>
+            <?php tampilkan_seksi_menu($kategori_menu['Signature Coffee']); ?>
           </div>
 
           <div>
             <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Espresso Based</h3>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Espresso</h3><span class="menu-item-row__price">Rp 20k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Americano</h3><span class="menu-item-row__price">Rp 23k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Latte</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Cappuccino</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Mocha Latte</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Con Hielo</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Caramelt</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Vanilla Latte</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Hazelnut Latte</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Americano (Orange/Lemon)</h3><span class="menu-item-row__price">Rp 27k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Caramble</h3><span class="menu-item-row__price">Rp 28k</span></div></div>
+            <?php tampilkan_seksi_menu($kategori_menu['Espresso Based']); ?>
           </div>
         </div>
       </div>
@@ -91,23 +157,12 @@
           <div class="menu-list-items">
             <div style="margin-bottom: 60px;">
               <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Refreshment Mocktails</h3>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Sunset Lychee</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Crystall Bloom</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Passion Paradise</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Sunkissed</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
+              <?php tampilkan_seksi_menu($kategori_menu['Refreshment Mocktails']); ?>
             </div>
 
             <div>
               <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Non Coffee Ritual</h3>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Strawberry Cloud</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Matcha</h3><span class="menu-item-row__price">Rp 28k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Chocolate</h3><span class="menu-item-row__price">Rp 28k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Chocomint</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Biscoff Latte</h3><span class="menu-item-row__price">Rp 33k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Cookies Cloud</h3><span class="menu-item-row__price">Rp 33k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Lemon Tea</h3><span class="menu-item-row__price">Rp 20k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Peach Tea</h3><span class="menu-item-row__price">Rp 20k</span></div></div>
-              <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Lychee Tea</h3><span class="menu-item-row__price">Rp 23k</span></div></div>
+              <?php tampilkan_seksi_menu($kategori_menu['Non Coffee Ritual']); ?>
             </div>
           </div>
           <div class="editorial-sticky">
@@ -141,38 +196,22 @@
         <div class="menu-list-items">
           <div style="margin-bottom: 48px;">
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Main Course</h3>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Mie Katsu</h3><span class="menu-item-row__price">Rp 28k</span></div><p class="menu-item-row__desc">Mie, potongan sayur & potongan katsu.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Nasi Goreng Get</h3><span class="menu-item-row__price">Rp 28k</span></div><p class="menu-item-row__desc">Bumbu khas Get dengan toping suiran ayam.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Nasi Goreng Hongkong</h3><span class="menu-item-row__price">Rp 28k</span></div><p class="menu-item-row__desc">Bumbu gurih pedas lada dengan mix vegetable & ham ayam.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">American Chicken Chop</h3><span class="menu-item-row__price">Rp 35k</span></div><p class="menu-item-row__desc">Nasi goreng dominan lada, mix vegetable & katsu crispy.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Ayam Goreng Kremes</h3><span class="menu-item-row__price">Rp 35k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Sop Iga</h3><span class="menu-item-row__price">Rp 45k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Iga Bakar</h3><span class="menu-item-row__price">Rp 45k</span></div></div>
+            <?php tampilkan_seksi_menu($kategori_menu['Main Course']); ?>
           </div>
 
           <div style="margin-bottom: 48px;">
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Rice Bowls</h3>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Buttermilk Chicken</h3><span class="menu-item-row__price">Rp 33k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Ayam Sambal Matah</h3><span class="menu-item-row__price">Rp 33k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Beef Teriyaki</h3><span class="menu-item-row__price">Rp 38k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Beef Blackpepper</h3><span class="menu-item-row__price">Rp 38k</span></div></div>
+            <?php tampilkan_seksi_menu($kategori_menu['Rice Bowls']); ?>
           </div>
 
           <div style="margin-bottom: 48px;">
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Breakfast</h3>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Bubur Ayam</h3><span class="menu-item-row__price">Rp 22k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Soto Ayam</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Get Lucky Noodle</h3><span class="menu-item-row__price">Rp 25k</span></div><p class="menu-item-row__desc">Bakmie dengan toping ayam charsiu.</p></div>
+            <?php tampilkan_seksi_menu($kategori_menu['Breakfast']); ?>
           </div>
 
           <div>
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Snacks & Bites</h3>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">French Fries</h3><span class="menu-item-row__price">Rp 25k</span></div><p class="menu-item-row__desc">O.G / Balado.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Pisang Goreng</h3><span class="menu-item-row__price">Rp 25k</span></div><p class="menu-item-row__desc">O.G / Srikaya / Keju.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Popcorn Chicken</h3><span class="menu-item-row__price">Rp 28k</span></div></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Chicken Wings</h3><span class="menu-item-row__price">Rp 28k/30k</span></div><p class="menu-item-row__desc">OG / Hot Lava.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Mix Platter</h3><span class="menu-item-row__price">Rp 38k</span></div><p class="menu-item-row__desc">French fries, nugget, sosis, onion ring.</p></div>
-            <div class="menu-item-row" data-reveal><div class="menu-item-row__header"><h3 class="menu-item-row__name">Onion Ring</h3><span class="menu-item-row__price">Rp 25k</span></div></div>
+            <?php tampilkan_seksi_menu($kategori_menu['Snacks & Bites']); ?>
           </div>
         </div>
       </div>
