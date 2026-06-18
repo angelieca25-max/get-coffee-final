@@ -19,13 +19,14 @@ if (isset($_POST['submit_login'])) {
         $_SESSION['username'] = $username;
         $_SESSION['status'] = "login";
         
-       
-        header("location:index.php");
+        header("location:admin/dashboard.php");
+        exit(); 
     } else {
        
         echo "<script>alert('Username atau Password salah!'); window.location='login.php';</script>";
     }
 } else {
     header("location:login.php");
+    exit();
 }
 ?>

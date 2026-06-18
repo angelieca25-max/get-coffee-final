@@ -85,7 +85,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == "login") {
 
     <div class="login-card">
         <h2>GET COFFEE</h2>
-        <p style="color: #faf9f6; margin-bottom: 2rem;">Silakan login terlebih dahulu</p>
+        <p style="color: #402906; margin-bottom: 2rem;">Silakan login terlebih dahulu</p>
         
        
         <form action="proses-login.php" method="POST">
