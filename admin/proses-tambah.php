@@ -1,5 +1,6 @@
 <?php
-$conn = mysqli_connect("localhost", "root", "", "get-coffee");
+
+$conn = mysqli_connect("localhost", "root", "", "db_getcoffee"); 
 
 if (isset($_POST['simpan'])) {
     $nama_menu = $_POST['nama_menu'];

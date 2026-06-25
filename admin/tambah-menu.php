@@ -204,8 +204,8 @@ if (isset($_POST['simpan'])) {
     <h2>Tambah Menu Baru</h2>
     <a href="menu.php" class="btn-back">← Kembali ke Kelola Menu</a>
 
-    <form action="" method="POST" enctype="multipart/form-data">
-        <table>
+    <form action="proses-tambah.php" method="POST">
+        <table cellpadding="8">
             <tr>
                 <td>Nama Menu</td>
                 <td>:</td>
@@ -235,19 +235,14 @@ if (isset($_POST['simpan'])) {
             <tr>
                 <td>Harga</td>
                 <td>:</td>
-                <td><input type="number" name="harga" placeholder="Contoh: 20000" required></td>
-            </tr>
-            <tr>
-                <td>Gambar Menu</td>
-                <td>:</td>
-                <td><input type="file" name="gambar" accept="image/*" required></td>
+                <td><input type="number" name="harga" required></td>
             </tr>
             <tr>
                 <td></td>
                 <td></td>
-                <td style="padding-top: 20px;">
-                    <button type="submit" name="simpan" class="btn-submit">Simpan Menu</button>
-                    <button type="reset" class="btn-reset">Reset</button>
+                <td>
+                    <button type="submit" name="simpan">Simpan Menu</button>
+                    <button type="reset">Reset</button>
                 </td>
             </tr>
         </table>
