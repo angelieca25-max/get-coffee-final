@@ -4,9 +4,26 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
     header("location:login.php");
     exit;
 }
+
+// --- PERBAIKAN UTAMA: Membuat koneksi database langsung di dalam file ---
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "get-coffee"; // <-- PASTIKAN nama database Anda di phpMyAdmin sudah benar "get_coffee"
+
+$koneksi = mysqli_connect($host, $user, $pass, $db);
+
+if (!$koneksi) {
+    die("Koneksi ke database gagal: " . mysqli_connect_error());
+}
+
+// Ambil data seluruh kategori dari database phpMyAdmin
+$query_kategori = mysqli_query($koneksi, "SELECT * FROM kategori ORDER BY id_kategori ASC");
 ?>
 
 <!DOCTYPE html>
+<html lang="id">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Get Coffee – Kopi Berkualitas, Momen Bermakna</title>
@@ -15,10 +32,44 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <style>
+        .category-section {
+            background-color: transparent;
+            padding: 20px 0;
+        }
+        .category-container {
+            text-align: center;
+        }
+        .category-wrapper {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .category-badge {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        .category-badge:hover {
+            background-color: #c9a050; /* Warna aksen emas */
+            color: #fff;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="navbar__inner">
             <a class="navbar__logo" href="index.php">
@@ -46,7 +97,6 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
     </nav>
 
     <main>
-        <!-- HERO -->
         <section class="hero">
             <div class="container hero__inner">
                 <div class="hero__content">
@@ -86,7 +136,21 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
             </div>
         </section>
 
-        <!-- MENU UNGGULAN -->
+        <section class="category-section">
+            <div class="category-wrapper">
+    <?php if ($query_kategori) { 
+        while($kat = mysqli_fetch_assoc($query_kategori)) { 
+        ?>
+            <a href="menu.php?kategori=<?= $kat['id_kat']; ?>" class="category-badge">
+                <?= htmlspecialchars($kat['nama_kat']); ?>
+            </a>
+        <?php 
+        } 
+    } 
+    ?>
+</div>
+        </section>
+
         <section class="menu-section">
             <div class="container">
                 <div class="menu-section__header" data-reveal>
@@ -109,7 +173,8 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
                             <h3 class="menu-card__title">Scotch Latte</h3>
                             <div class="menu-card__price">Rp 25.000</div>
                         </div>
-                    </article>                    <article class="menu-card card-tall" data-reveal>
+                    </article>
+                    <article class="menu-card card-tall" data-reveal>
                         <div class="menu-card__bg"><img src="images/Menu/mockptr.png" alt="sunkissed" loading="lazy" /></div>
                         <div class="menu-card__content">
                             <span class="menu-card__label">Mocktail</span>
@@ -136,7 +201,6 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
             </div>
         </section>
 
-        <!-- ABOUT -->
         <section class="about-section">
             <div class="container about-inner">
                 <div class="about-images" data-reveal>
@@ -154,7 +218,6 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
 
     </main>
 
-    <!-- FOOTER -->
     <footer class="footer">
         <div class="container">
             <div class="footer__grid">
@@ -181,6 +244,3 @@ if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
     <script src="js/main.js"></script>
 </body>
 </html>
-
-// refresh stats github
-// update index ke php

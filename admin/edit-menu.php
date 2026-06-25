@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$conn = mysqli_connect("localhost", "root", "", "db_getcoffee");
+$conn = mysqli_connect("localhost", "root", "", "get-coffee");
 
 if (!isset($_GET['id'])) {
     header("Location: menu.php");
@@ -20,11 +20,13 @@ if (mysqli_num_rows($query) < 1) {
 }
 
 if (isset($_POST['simpan'])) {
+    $id_menu     = $_POST['id_menu']; 
     $nama_menu   = $_POST['nama_menu'];
     $id_kategori = $_POST['id_kategori'];
     $harga       = $_POST['harga'];
     $deskripsi   = $_POST['deskripsi'];
 
+    // LOGIKA PROSES UPDATE (Menyimpan id_kategori ke database)
     $sql_update = "UPDATE menu SET 
                     nama_menu = '$nama_menu', 
                     id_kategori = '$id_kategori', 
@@ -55,37 +57,67 @@ if (isset($_POST['simpan'])) {
 <body>
 
     <h2>Edit Data Menu - Get Coffee</h2>
-    <a href="menu.php">⬅ Kembali ke Kelola Menu</a>
+    <a href="menu.php">← Kembali ke Kelola Menu</a>
     <br><br>
 
-    <form action="" method="POST">
-        <table cellpadding="8">
-            <tr>
-                <td>Nama Menu:</td>
-                <td><input type="text" name="nama_menu" value="<?php echo $data['nama_menu']; ?>" required style="width: 250px;"></td>
-            </tr>
-            <tr>
-                <td>Kategori:</td>
-                <td>
-                    <select name="id_kategori" required style="width: 258px;">
-                        <option value="1" <?php echo ($data['id_kategori'] == 1) ? 'selected' : ''; ?>>Minuman (1)</option>
-                        <option value="2" <?php echo ($data['id_kategori'] == 2) ? 'selected' : ''; ?>>Makanan (2)</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Harga (Rp):</td>
-                <td><input type="number" name="harga" value="<?php echo $data['harga']; ?>" required style="width: 250px;"></td>
-            </tr>
-            <tr>
-                <td>Deskripsi:</td>
-                <td><textarea name="deskripsi" rows="4" style="width: 250px;"><?php echo $data['deskripsi']; ?></textarea></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><button type="submit" name="simpan" style="padding: 6px 15px; cursor: pointer;">Simpan Perubahan</button></td>
-            </tr>
-        </table>
+    <form action="" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id_menu" value="<?php echo $id_menu; ?>">
+
+        <table cellpadding="8" style="width: 100%; max-width: 500px;">
+        <tr>
+            <td style="width: 130px;">Nama Menu</td>
+            <td style="width: 10px;">:</td>
+            <td><input type="text" name="nama_menu" value="<?php echo $data['nama_menu']; ?>" style="width: 100%;"></td>
+        </tr>
+
+        <tr>
+            <td>Kategori</td>
+            <td>:</td>
+            <td>
+                <select name="id_kategori" required style="width: 100%;">
+                    <option value="">-- Pilih Kategori --</option>
+                    <?php
+                    $ambil_kat = mysqli_query($conn, "SELECT * FROM kategori");
+                    while($kat = mysqli_fetch_assoc($ambil_kat)) {
+                        // Menentukan agar kategori lama otomatis terpilih
+                        $selected = ($kat['id_kategori'] == $data['id_kategori']) ? 'selected' : '';
+                        echo "<option value='".$kat['id_kategori']."' $selected>".$kat['nama_kategori']."</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Harga (Rp)</td>
+            <td>:</td>
+            <td><input type="number" name="harga" value="<?php echo $data['harga']; ?>" style="width: 100%;"></td>
+        </tr>
+
+        <tr>
+            <td>Deskripsi</td>
+            <td>:</td>
+            <td><textarea name="deskripsi" rows="4" style="width: 100%; height: 80px; resize: none;"><?php echo $data['deskripsi']; ?></textarea></td>
+        </tr>
+
+        <tr>
+            <td>Gambar Menu</td>
+            <td>:</td>
+            <td>
+                <input type="file" name="gambar" accept="image/*">
+                <br>
+                <small style="color: red; font-size: 12px;">*Biarkan kosong jika tidak ingin mengubah gambar.</small>
+            </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                <button type="submit" name="simpan">Simpan Perubahan</button>
+            </td>
+        </tr>
+    </table>
     </form>
 
 </body>

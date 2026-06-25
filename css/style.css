@@ -343,5 +343,27 @@ ul { list-style: none; }
   .navbar__hamburger { display: flex; }
   .menu-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
   .card-large, .card-tall, .card-wide { grid-column: span 1; grid-row: span 1; }
-  .footer__grid { grid-template-columns: 1fr; }
+  .footer_grid { grid-template-columns: 1fr; }
+}
+body {
+  background-image: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%) !important;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.login-card, .container-login, .card-login, [class*="login"] {
+background: var(--glass-bg) !important; /* Efek transparan dari baris 18 */
+    backdrop-filter: blur(24px) !important;  /* Efek buram/blur dari baris 66 */
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid var(--glass-border) !important; /* Garis tepi kaca tipis dari baris 19 */
+    border-radius: var(--radius-lg) !important; /* Sudut melengkung halus dari baris 34 */
+    box-shadow: var(--shadow-lg) !important; /* Efek bayangan estetik dari baris 27 */
+}
+form button, form input[type="submit"] {
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: var(--transition-fast) !important;
+}
+form button:hover, form input[type="submit"]:hover {
+    background-color: var(--color-accent-light) !important; /* Berubah ke emas terang saat disentuh */
+    transform: translateY(-2px);
 }

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$conn = mysqli_connect("localhost", "root", "", "db_getcoffee"); 
+$conn = mysqli_connect("localhost", "root", "", "get-coffee"); 
 
 if (!$conn) {
     die("Koneksi gagal: " . mysqli_connect_error());
