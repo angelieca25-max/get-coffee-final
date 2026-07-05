@@ -1,7 +1,3 @@
-/* ============================================
-   GET COFFEE - Main JavaScript
-   ============================================ */
-
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- Navbar Scroll Effect ---------- */
