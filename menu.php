@@ -1,18 +1,10 @@
 <?php
-session_start();
+include 'connection.php';
+include 'functions.php';
 
-$conn = mysqli_connect("localhost", "root", "", "get-coffee"); 
+$query = get_all_menus_with_categories($connection);
 
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
-}
-
-
-$sql = "SELECT * FROM menu";
-$query = mysqli_query($conn, $sql);
-
-
-$kategori_menu = [
+$menu_categories = [
     'Signature Coffee'     => [],
     'Espresso Based'       => [],
     'Refreshment Mocktails'=> [],
@@ -26,54 +18,56 @@ $kategori_menu = [
 
 if (mysqli_num_rows($query) > 0) {
     while ($row = mysqli_fetch_array($query)) {
-        $nama = $row['nama_menu'];
-        $harga = $row['harga'];
-        
-        
-        $kolom_keys = array_keys($row);
-        $desc = isset($kolom_keys[5]) ? $row[$kolom_keys[5]] : ''; 
-        
-        
-        $harga_k = number_format(($harga / 1000), 0) . 'k';
+        $menu_name = $row['menu_name'];
+        $price = $row['price'];
+        $description = isset($row['description']) ? $row['description'] : ''; 
+        $price_k = number_format(($price / 1000), 0) . 'k';
+        $category_name = $row['category_name'];
 
-        
-        $nama_lc = strtolower($nama);
-        if (in_array($nama_lc, ['first strike', 'melonaire', 'scoth latte', 'get aren', 'dubai latte'])) {
-            $kategori_menu['Signature Coffee'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } elseif (in_array($nama_lc, ['espresso', 'americano', 'latte', 'cappuccino', 'mocha latte', 'con hielo', 'caramelt', 'vanilla latte', 'hazelnut latte', 'americano (orange/lemon)', 'caramble'])) {
-            $kategori_menu['Espresso Based'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } elseif (in_array($nama_lc, ['sunset lychee', 'crystall bloom', 'passion paradise', 'sunkissed'])) {
-            $kategori_menu['Refreshment Mocktails'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } elseif (in_array($nama_lc, ['strawberry cloud', 'matcha', 'chocolate', 'chocomint', 'biscoff latte', 'cookies cloud', 'lemon tea', 'peach tea', 'lychee tea'])) {
-            $kategori_menu['Non Coffee Ritual'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } elseif (in_array($nama_lc, ['mie katsu', 'nasi goreng get', 'nasi goreng hongkong', 'american chicken chop', 'ayam goreng kremes', 'sop iga', 'iga bakar', 'nasi ayam'])) {
-            $kategori_menu['Main Course'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } elseif (in_array($nama_lc, ['buttermilk chicken', 'ayam sambal matah', 'beef teriyaki', 'beef blackpepper'])) {
-            $kategori_menu['Rice Bowls'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } elseif (in_array($nama_lc, ['bubur ayam', 'soto ayam', 'get lucky noodle'])) {
-            $kategori_menu['Breakfast'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
-        } else {
-           
-            $kategori_menu['Snacks & Bites'][] = ['name' => $nama, 'price' => $harga_k, 'desc' => $desc];
+        // Check image path
+        $image_src = '';
+        if (!empty($row['image'])) {
+            if (file_exists('uploads/' . $row['image'])) {
+                $image_src = 'uploads/' . $row['image'];
+            } elseif (file_exists('images/Menu/' . $row['image'])) {
+                $image_src = 'images/Menu/' . $row['image'];
+            } elseif (file_exists('images/' . $row['image'])) {
+                $image_src = 'images/' . $row['image'];
+            }
         }
+
+        $item_data = ['name' => $menu_name, 'price' => $price_k, 'desc' => $description, 'image' => $image_src];
+
+        // Group dynamically using category_name from database
+        if (!isset($menu_categories[$category_name])) {
+            $menu_categories[$category_name] = [];
+        }
+        $menu_categories[$category_name][] = $item_data;
     }
 }
 
 
-function tampilkan_seksi_menu($items) {
+function display_menu_section($items) {
     if (empty($items)) {
-        echo "<p style='color: #999; font-style: italic; margin-bottom: 20px;'>Menu belum tersedia.</p>";
+        echo "<p style='color: #999; font-style: italic; margin-bottom: 20px;'>Menu not available.</p>";
         return;
     }
     foreach ($items as $item) {
-        echo '<div class="menu-item-row" data-reveal>';
-        echo '  <div class="menu-item-row__header">';
-        echo '    <h3 class="menu-item-row__name">' . htmlspecialchars($item['name']) . '</h3>';
-        echo '    <span class="menu-item-row__price">Rp ' . htmlspecialchars($item['price']) . '</span>';
-        echo '  </div>';
-        if (!empty($item['desc'])) {
-            echo '  <p class="menu-item-row__desc">' . htmlspecialchars($item['desc']) . '</p>';
+        echo '<div class="menu-item-row" data-reveal style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px;">';
+        if (!empty($item['image'])) {
+            echo '  <div class="menu-item-img-wrapper" style="width: 75px; height: 75px; border-radius: 8px; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);">';
+            echo '    <img src="' . htmlspecialchars($item['image']) . '" alt="' . htmlspecialchars($item['name']) . '" style="width: 100%; height: 100%; object-fit: cover;" />';
+            echo '  </div>';
         }
+        echo '  <div style="flex-grow: 1;">';
+        echo '    <div class="menu-item-row__header">';
+        echo '      <h3 class="menu-item-row__name">' . htmlspecialchars($item['name']) . '</h3>';
+        echo '      <span class="menu-item-row__price">Rp ' . htmlspecialchars($item['price']) . '</span>';
+        echo '    </div>';
+        if (!empty($item['desc'])) {
+            echo '    <p class="menu-item-row__desc">' . htmlspecialchars($item['desc']) . '</p>';
+        }
+        echo '  </div>';
         echo '</div>';
     }
 }
@@ -140,12 +134,12 @@ function tampilkan_seksi_menu($items) {
         <div class="menu-list-items">
           <div style="margin-bottom: 60px;">
             <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Signature Coffee</h3>
-            <?php tampilkan_seksi_menu($kategori_menu['Signature Coffee']); ?>
+            <?php display_menu_section($menu_categories['Signature Coffee']); ?>
           </div>
 
           <div>
             <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Espresso Based</h3>
-            <?php tampilkan_seksi_menu($kategori_menu['Espresso Based']); ?>
+            <?php display_menu_section($menu_categories['Espresso Based']); ?>
           </div>
         </div>
       </div>
@@ -157,12 +151,12 @@ function tampilkan_seksi_menu($items) {
           <div class="menu-list-items">
             <div style="margin-bottom: 60px;">
               <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Refreshment Mocktails</h3>
-              <?php tampilkan_seksi_menu($kategori_menu['Refreshment Mocktails']); ?>
+              <?php display_menu_section($menu_categories['Refreshment Mocktails']); ?>
             </div>
 
             <div>
               <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Non Coffee Ritual</h3>
-              <?php tampilkan_seksi_menu($kategori_menu['Non Coffee Ritual']); ?>
+              <?php display_menu_section($menu_categories['Non Coffee Ritual']); ?>
             </div>
           </div>
           <div class="editorial-sticky">
@@ -196,22 +190,22 @@ function tampilkan_seksi_menu($items) {
         <div class="menu-list-items">
           <div style="margin-bottom: 48px;">
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Main Course</h3>
-            <?php tampilkan_seksi_menu($kategori_menu['Main Course']); ?>
+            <?php display_menu_section($menu_categories['Main Course']); ?>
           </div>
 
           <div style="margin-bottom: 48px;">
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Rice Bowls</h3>
-            <?php tampilkan_seksi_menu($kategori_menu['Rice Bowls']); ?>
+            <?php display_menu_section($menu_categories['Rice Bowls']); ?>
           </div>
 
           <div style="margin-bottom: 48px;">
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Breakfast</h3>
-            <?php tampilkan_seksi_menu($kategori_menu['Breakfast']); ?>
+            <?php display_menu_section($menu_categories['Breakfast']); ?>
           </div>
 
           <div>
             <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Snacks & Bites</h3>
-            <?php tampilkan_seksi_menu($kategori_menu['Snacks & Bites']); ?>
+            <?php display_menu_section($menu_categories['Snacks & Bites']); ?>
           </div>
         </div>
       </div>
