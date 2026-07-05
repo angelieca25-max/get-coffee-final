@@ -10,7 +10,7 @@
 function get_all_menus_with_categories($connection, $order_by = "") {
     $sql = "SELECT menu.*, categories.category_name 
             FROM menu 
-            INNER JOIN categories ON menu.id_category = categories.id_category";
+            LEFT JOIN categories ON menu.id_category = categories.id_category";
     if (!empty($order_by)) {
         $sql .= " ORDER BY " . $order_by;
     }
