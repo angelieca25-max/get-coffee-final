@@ -4,17 +4,13 @@ include 'functions.php';
 
 $query = get_all_menus_with_categories($connection);
 
-$menu_categories = [
-    'Signature Coffee'     => [],
-    'Espresso Based'       => [],
-    'Refreshment Mocktails'=> [],
-    'Non Coffee Ritual'    => [],
-    'Main Course'          => [],
-    'Rice Bowls'           => [],
-    'Breakfast'            => [],
-    'Snacks & Bites'       => []
-];
-
+$menu_categories = [];
+$categories_result = get_all_categories($connection, "id_category ASC");
+if ($categories_result && mysqli_num_rows($categories_result) > 0) {
+    while ($cat = mysqli_fetch_assoc($categories_result)) {
+        $menu_categories[$cat['category_name']] = [];
+    }
+}
 
 if (mysqli_num_rows($query) > 0) {
     while ($row = mysqli_fetch_array($query)) {
@@ -22,7 +18,7 @@ if (mysqli_num_rows($query) > 0) {
         $price = $row['price'];
         $description = isset($row['description']) ? $row['description'] : ''; 
         $price_k = number_format(($price / 1000), 0) . 'k';
-        $category_name = $row['category_name'];
+        $category_name = !empty($row['category_name']) ? $row['category_name'] : 'Uncategorized';
 
         // Check image path
         $image_src = '';
@@ -43,6 +39,21 @@ if (mysqli_num_rows($query) > 0) {
             $menu_categories[$category_name] = [];
         }
         $menu_categories[$category_name][] = $item_data;
+    }
+}
+
+$coffee_categories = [];
+$drinks_categories = [];
+$food_categories = [];
+
+foreach ($menu_categories as $cat_name => $items) {
+    $lower_name = strtolower($cat_name);
+    if (strpos($lower_name, 'coffee') !== false || strpos($lower_name, 'espresso') !== false || strpos($lower_name, 'kopi') !== false) {
+        $coffee_categories[$cat_name] = $items;
+    } elseif (strpos($lower_name, 'mocktail') !== false || strpos($lower_name, 'drink') !== false || strpos($lower_name, 'tea') !== false || strpos($lower_name, 'ritual') !== false || strpos($lower_name, 'beverage') !== false || strpos($lower_name, 'minuman') !== false) {
+        $drinks_categories[$cat_name] = $items;
+    } else {
+        $food_categories[$cat_name] = $items;
     }
 }
 
@@ -132,15 +143,24 @@ function display_menu_section($items) {
         </div>
 
         <div class="menu-list-items">
-          <div style="margin-bottom: 60px;">
-            <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Signature Coffee</h3>
-            <?php display_menu_section($menu_categories['Signature Coffee']); ?>
-          </div>
-
-          <div>
-            <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Espresso Based</h3>
-            <?php display_menu_section($menu_categories['Espresso Based']); ?>
-          </div>
+          <?php 
+          if (empty($coffee_categories)) {
+              echo "<p style='color: #999; font-style: italic; margin-bottom: 20px;'>Menu not available.</p>";
+          } else {
+              $i = 0;
+              $count = count($coffee_categories);
+              foreach ($coffee_categories as $cat_name => $items) {
+                  $i++;
+                  $margin_bottom = ($i < $count) ? 'margin-bottom: 60px;' : '';
+          ?>
+                  <div style="<?php echo $margin_bottom; ?>">
+                    <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;"><?php echo htmlspecialchars($cat_name); ?></h3>
+                    <?php display_menu_section($items); ?>
+                  </div>
+          <?php 
+              }
+          } 
+          ?>
         </div>
       </div>
     </section>
@@ -149,15 +169,24 @@ function display_menu_section($items) {
       <div class="container">
         <div class="editorial-layout editorial-layout--flipped">
           <div class="menu-list-items">
-            <div style="margin-bottom: 60px;">
-              <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Refreshment Mocktails</h3>
-              <?php display_menu_section($menu_categories['Refreshment Mocktails']); ?>
-            </div>
-
-            <div>
-              <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Non Coffee Ritual</h3>
-              <?php display_menu_section($menu_categories['Non Coffee Ritual']); ?>
-            </div>
+            <?php 
+            if (empty($drinks_categories)) {
+                echo "<p style='color: #999; font-style: italic; margin-bottom: 20px;'>Menu not available.</p>";
+            } else {
+                $i = 0;
+                $count = count($drinks_categories);
+                foreach ($drinks_categories as $cat_name => $items) {
+                    $i++;
+                    $margin_bottom = ($i < $count) ? 'margin-bottom: 60px;' : '';
+            ?>
+                    <div style="<?php echo $margin_bottom; ?>">
+                      <h3 class="editorial-label" style="font-size: 1.2rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;"><?php echo htmlspecialchars($cat_name); ?></h3>
+                      <?php display_menu_section($items); ?>
+                    </div>
+            <?php 
+                }
+            }
+            ?>
           </div>
           <div class="editorial-sticky">
             <span class="editorial-label" style="text-align: right;">02 — The Infusion</span>
@@ -188,25 +217,24 @@ function display_menu_section($items) {
           </div>
         </div>
         <div class="menu-list-items">
-          <div style="margin-bottom: 48px;">
-            <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Main Course</h3>
-            <?php display_menu_section($menu_categories['Main Course']); ?>
-          </div>
-
-          <div style="margin-bottom: 48px;">
-            <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Rice Bowls</h3>
-            <?php display_menu_section($menu_categories['Rice Bowls']); ?>
-          </div>
-
-          <div style="margin-bottom: 48px;">
-            <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Breakfast</h3>
-            <?php display_menu_section($menu_categories['Breakfast']); ?>
-          </div>
-
-          <div>
-            <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;">Snacks & Bites</h3>
-            <?php display_menu_section($menu_categories['Snacks & Bites']); ?>
-          </div>
+          <?php 
+          if (empty($food_categories)) {
+              echo "<p style='color: #999; font-style: italic; margin-bottom: 20px;'>Menu not available.</p>";
+          } else {
+              $i = 0;
+              $count = count($food_categories);
+              foreach ($food_categories as $cat_name => $items) {
+                  $i++;
+                  $margin_bottom = ($i < $count) ? 'margin-bottom: 48px;' : '';
+          ?>
+                  <div style="<?php echo $margin_bottom; ?>">
+                    <h3 class="editorial-label" style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 24px; border-bottom: 2px solid var(--color-accent); display: inline-block;"><?php echo htmlspecialchars($cat_name); ?></h3>
+                    <?php display_menu_section($items); ?>
+                  </div>
+          <?php 
+              }
+          }
+          ?>
         </div>
       </div>
     </section>
