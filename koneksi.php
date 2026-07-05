@@ -2,11 +2,11 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "get-coffee";
+$db   = "db_getcoffee";
 
-$koneksi = mysqli_connect('localhost', 'root', "", 'get-coffee');
+$connection = mysqli_connect($host, $user, $pass, $db);
 
-if (!$koneksi) {
-    die("Koneksi ke database gagal: " . mysqli_connect_error());
+if (!$connection) {
+    die("Database connection failed: " . mysqli_connect_error());
 }
 ?>
