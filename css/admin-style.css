@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-gradient: linear-gradient(135deg, #1f140f 0%, #36221a 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-light: #f5f5f5;
+    --text-muted: #a8968e;
+    --accent-coffee: #dfb287; 
+    --accent-hover: #cfa175;
+    --danger-color: #ff6b6b;
+    --danger-hover: #fa5252;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg-gradient) !important;
+    color: var(--text-light);
+    min-height: 100vh;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+}
+
+.admin-box {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 16px;
+    padding: 35px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+}
+
+h1, h2, h3 {
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    color: var(--accent-coffee);
+}
+
+h1 { font-size: 28px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+
+a {
+    color: var(--accent-coffee);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--text-light);
+}
+
+.btn-back {
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 25px;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.btn-back:hover {
+    color: var(--text-light);
+}
+
+/* Navigation Menu Grid */
+.admin-nav {
+    list-style: none;
+    padding: 0;
+    margin: 25px 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.admin-nav li a {
+    display: block;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.admin-nav li a:hover {
+    background: var(--accent-coffee);
+    color: #2d1e17;
+    border-color: var(--accent-coffee);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(223, 178, 135, 0.2);
+}
+
+/* Action Links / Buttons */
+.btn-action {
+    display: inline-block;
+    background: var(--accent-coffee);
+    color: #2d1e17;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-action:hover {
+    background: var(--accent-hover);
+    color: #2d1e17;
+}
+
+.btn-danger {
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--danger-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-danger:hover {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--text-light);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-light);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Table Style */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 600px;
+}
+
+th {
+    color: var(--accent-coffee);
+    font-weight: 600;
+    padding: 14px;
+    font-size: 14px;
+    border-bottom: 2px solid var(--glass-border);
+}
+
+td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+select option {
+    background-color: #ffffff;
+    color: #2d1e17;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-coffee);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Form layout tables */
+.form-table {
+    width: 100%;
+}
+
+.form-table td {
+    border: none;
+    padding: 8px 0;
+}
+
+.form-table td:first-child {
+    width: 150px;
+    color: var(--text-muted);
+}
+
+.form-add-compact {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+}
+
+.form-add-compact input[type="text"] {
+    flex: 1;
+}
+
+.form-add-compact button {
+    background: var(--accent-coffee);
+    color: #2d1e17;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.form-add-compact button:hover {
+    opacity: 0.9;
+}
+
+/* Responsive adjustment */
+@media (max-width: 600px) {
+    body {
+        padding: 20px 10px;
+    }
+    .admin-box {
+        padding: 20px;
+    }
+    .form-add-compact {
+        flex-direction: column;
+    }
+    .form-add-compact button {
+        width: 100%;
+    }
+}
