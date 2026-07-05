@@ -1,240 +1,99 @@
 <?php
 session_start();
-
-$conn = mysqli_connect("localhost", "root", "", "get-coffee"); 
-
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
+    header("Location: ../login.php");
+    exit();
 }
 
-$sql = "SELECT * FROM menu ORDER BY id_menu DESC";
-$query = mysqli_query($conn, $sql);
+include '../connection.php'; 
+include '../functions.php';
+
+$query = get_all_menus_with_categories($connection, "menu.id_menu DESC");
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Menu - Get Coffee</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --primary-color: #6f4e37; /* Warna khas Kopi */
-            --primary-hover: #5a3e2b;
-            --text-main: #2d2d2d;
-            --text-muted: #7c7c7c;
-            --border-color: #eaeaea;
-            --danger-color: #dc3545;
-            --edit-color: #0d6efd;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-        }
-
-        /* Header Styling */
-        .header-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 20px;
-        }
-
-        .header-area h2 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .btn-back {
-            color: var(--text-muted);
-            margin-right: 10px;
-        }
-
-        .btn-back:hover {
-            color: var(--text-main);
-        }
-
-        .btn-add {
-            background-color: var(--primary-color);
-            color: #fff !important;
-        }
-
-        .btn-add:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-        }
-
-        /* Table Aesthetic Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #fdfaf7;
-            color: var(--primary-color);
-            font-weight: 600;
-            padding: 16px;
-            font-size: 14px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 14px;
-            color: #4a4a4a;
-            vertical-align: middle;
-        }
-
-        tr:hover {
-            background-color: #fafafa;
-        }
-
-        /* Image Styling di Tabel */
-        .img-container {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .no-image {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        /* Badge Harga */
-        .price-badge {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        /* Tombol Aksi */
-        .actions a {
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin-right: 5px;
-            display: inline-block;
-            transition: background 0.2s;
-        }
-
-        .btn-edit {
-            color: var(--edit-color);
-            background-color: #ecf3ff;
-        }
-
-        .btn-edit:hover {
-            background-color: #d7e6ff;
-        }
-
-        .btn-delete {
-            color: var(--danger-color);
-            background-color: #fff1f2;
-        }
-
-        .btn-delete:hover {
-            background-color: #ffe4e6;
-        }
-    </style>
+    <title>Manage Menus - Get Coffee</title>
+    <link rel="stylesheet" href="../css/admin-style.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="header-area">
-        <h2>Kelola Menu - Admin Hub</h2>
-        <div class="nav-links">
-            <a href="dashboard.php" class="btn-back">← Kembali ke Dashboard</a>
-            <a href="tambah-menu.php" class="btn-add">+ Tambah Menu Baru</a>
-        </div>
+<div class="admin-box" style="max-width: 950px;">
+    <h2>Manage Menus - Admin Hub</h2>
+    <div style="margin-bottom: 20px;">
+        <a href="dashboard.php" class="btn-back" style="margin-bottom: 0;">← Back to Dashboard</a> 
+        <span style="color: var(--glass-border); margin: 0 10px;">|</span>
+        <a href="add-menu.php" class="btn-action" style="padding: 6px 12px; font-size: 13px;">+ Add New Menu</a>
     </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama Menu</th>
-                <th>Keterangan / Varian</th>
-                <th>Harga</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            if(mysqli_num_rows($query) > 0) {
-                while($result = mysqli_fetch_array($query)){
-                   
-                    $id_menu = isset($result['id']) ? $result['id'] : (isset($result['id_menu']) ? $result['id_menu'] : '');
-                    $nama_menu = $result['nama_menu']; 
-                    $harga = $result['harga']; 
-                    
-                    $kolom_keys = array_keys($result);
-                    $kolom_ketiga = isset($kolom_keys[5]) ? $result[$kolom_keys[5]] : ''; 
-            ?>
-                    <tr>
-                        <td><?php echo $id_menu; ?></td>
-                        <td><?php echo $nama_menu; ?></td>
-                        <td><?php echo $kolom_ketiga; ?></td>
-                        <td>Rp <?php echo number_format($harga, 0, ',', '.'); ?></td>
-                        <td>
-                            <a href="edit-menu.php?id=<?php echo $id_menu; ?>">Edit</a> | 
-                            <a href="hapus-menu.php?id=<?php echo $id_menu; ?>" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
-                        </td>
-                    </tr>
-            <?php 
+    
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">No</th>
+                    <th style="width: 80px; text-align: center;">Image</th>
+                    <th>Menu Name</th>
+                    <th>Category</th>
+                    <th>Description / Variant</th>
+                    <th style="width: 100px;">Price</th>
+                    <th style="width: 150px; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                if(mysqli_num_rows($query) > 0) {
+                    $no = 1;
+                    while($result = mysqli_fetch_array($query)){
+                        $id_menu = isset($result['id_menu']) ? $result['id_menu'] : (isset($result['id']) ? $result['id'] : '');
+                        $menu_name = $result['menu_name']; 
+                        $category_name = $result['category_name'];
+                        $description = isset($result['description']) ? $result['description'] : '';
+                        $price = $result['price']; 
+                        $image = isset($result['image']) ? $result['image'] : '';
+                ?>
+                        <tr>
+                            <td><?php echo $no++; ?></td>
+                            <td style="text-align: center;">
+                                <?php 
+                                $image_src = '';
+                                if (!empty($image)) {
+                                    if (file_exists('../uploads/' . $image)) {
+                                        $image_src = '../uploads/' . $image;
+                                    } elseif (file_exists('../images/Menu/' . $image)) {
+                                        $image_src = '../images/Menu/' . $image;
+                                    } elseif (file_exists('../images/' . $image)) {
+                                        $image_src = '../images/' . $image;
+                                    }
+                                }
+                                if (!empty($image_src)): 
+                                ?>
+                                    <img src="<?php echo htmlspecialchars($image_src); ?>" alt="Menu" style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid var(--glass-border);">
+                                <?php else: ?>
+                                    <span style="color: var(--text-muted); font-size: 11px; font-style: italic;">No Image</span>
+                                <?php endif; ?>
+                            </td>
+                            <td style="font-weight: 600; color: var(--accent-coffee);"><?php echo htmlspecialchars($menu_name); ?></td>
+                            <td><?php echo htmlspecialchars($category_name); ?></td>
+                            <td style="color: var(--text-muted); font-size: 13px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <?php echo htmlspecialchars($description); ?>
+                            </td>
+                            <td>Rp <?php echo number_format($price, 0, ',', '.'); ?></td>
+                            <td style="text-align: center;">
+                                <a href="edit-menu.php?id=<?php echo $id_menu; ?>" class="btn-secondary" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;">Edit</a>
+                                <a href="delete-menu.php?id=<?php echo $id_menu; ?>" class="btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('Are you sure you want to delete this menu?')">Delete</a>
+                            </td>
+                        </tr>
+                <?php 
+                    }
+                } else {
+                    echo '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No menu data available.</td></tr>';
                 }
-            } else {
-                <tr><td colspan="5" style="text-align:center;">Belum ada data menu.</td></tr>
-            }
-            ?>
-        </tbody>
-    </table>
+                ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </body>
